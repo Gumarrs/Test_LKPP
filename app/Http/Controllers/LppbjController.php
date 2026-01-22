@@ -30,23 +30,52 @@ class LppbjController extends Controller
     }
     // MENAMPILKAN DATA & SEARCH
     public function index(Request $request)
-    {
-        $query = Lppbj::query();
+        {
+            // 1. Mulai Query
+            $query = Lppbj::query();
 
-        // 1. Logika Search
-        if ($request->has('search')) {
-            $query->where('nama_lppbj', 'LIKE', '%' . $request->search . '%');
+            // 2. Logic SEARCH (Pencarian)
+            if ($request->filled('search')) {
+                $query->where('nama_lppbj', 'LIKE', '%' . $request->search . '%');
+            }
+
+            // 3. Logic FILTER KATEGORI
+            // Menggunakan 'filled' agar tidak error jika value kosong
+            if ($request->filled('filter_kategori')) {
+                // Pastikan kolom di database bernama 'kriteria'
+                $query->where('kriteria', $request->filter_kategori);
+            }
+
+          
+
+            // 5. Logic SORTING (Urutan)
+            if ($request->filled('sort')) {
+                switch ($request->sort) {
+                    case 'name_asc':
+                        $query->orderBy('nama_lppbj', 'asc');
+                        break;
+                    case 'name_desc':
+                        $query->orderBy('nama_lppbj', 'desc');
+                        break;
+                    case 'oldest':
+                        $query->orderBy('created_at', 'asc');
+                        break;
+                    case 'newest':
+                    default:
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                }
+            } else {
+                // Default: Data terbaru paling atas
+                $query->orderBy('created_at', 'desc');
+            }
+
+            // 6. Pagination (Menjaga agar filter tidak hilang saat pindah halaman)
+            $perPage = $request->input('per_page', 15);
+            $data = $query->paginate($perPage)->withQueryString(); 
+
+            return view('lppbj.index', compact('data'));
         }
-
-        // 2. Logika Pagination Dinamis
-        // Ambil nilai 'per_page' dari request, kalau tidak ada default ke 15
-        $perPage = $request->input('per_page', 15);
-        
-        // Gunakan withQueryString() agar saat ganti halaman, parameter search tidak hilang
-        $data = $query->latest()->paginate($perPage)->withQueryString();
-
-        return view('lppbj.index', compact('data'));
-    }
 
     // FORM TAMBAH DATA
     public function create()
