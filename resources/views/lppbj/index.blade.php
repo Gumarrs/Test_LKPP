@@ -21,23 +21,46 @@
         
         <div class="card-body">
             
-            <form action="{{ route('lppbj.index') }}" method="GET" class="mb-3">
-                <div class="d-flex justify-content-between align-items-center">
+            <form action="{{ route('lppbj.index') }}" method="GET" class="mb-4">
+                <div class="row g-2 align-items-center">
                     
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="text-muted small fw-bold">Tampilkan</span>
-                        <select name="per_page" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
-                            @foreach([10, 15, 25, 50, 75, 100] as $num)
+                    <div class="col-auto">
+                        <select name="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                            @foreach([10, 15, 25, 50, 100] as $num)
                                 <option value="{{ $num }}" {{ request('per_page', 15) == $num ? 'selected' : '' }}>
-                                    {{ $num }}
+                                    {{ $num }} Data
                                 </option>
                             @endforeach
                         </select>
                     </div>
 
-                    <div class="input-group input-group-sm" style="width: 250px;">
-                        <input type="text" name="search" class="form-control" placeholder="Cari Nama LPPBJ..." value="{{ request('search') }}">
-                        <button class="btn btn-secondary" type="submit">Cari</button>
+                    <div class="col-auto">
+                        <select name="filter_kategori" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">-- Semua Kategori --</option>
+                            <option value="Pemerintah" {{ request('filter_kategori') == 'Pemerintah' ? 'selected' : '' }}>Pemerintah</option>
+                            <option value="Non-Pemerintah" {{ request('filter_kategori') == 'Non-Pemerintah' ? 'selected' : '' }}>Non-Pemerintah</option>
+                        </select>
+                    </div>
+
+
+                    <div class="col-auto">
+                        <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Terbaru diinput</option>
+                            <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Terlama diinput</option>
+                            <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Nama (A-Z)</option>
+                            <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>Nama (Z-A)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-auto ms-auto d-flex gap-1">
+                        <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari Nama..." value="{{ request('search') }}" style="width: 200px;">
+                        <button class="btn btn-secondary btn-sm" type="submit"><i class="bi bi-search"></i></button>
+                        
+                        @if(request()->hasAny(['search', 'filter_kategori', 'filter_status', 'sort']))
+                            <a href="{{ route('lppbj.index') }}" class="btn btn-outline-danger btn-sm" title="Reset Filter">
+                                reset
+                            </a>
+                        @endif
                     </div>
 
                 </div>
@@ -125,6 +148,7 @@
                 </div>
                 
                 <div>
+                    {{-- PENTING: appends(request()->query()) menjaga filter tetap ada saat pindah halaman --}}
                     {{ $data->appends(request()->query())->links() }}
                 </div>
             </div>
@@ -133,6 +157,7 @@
 </div>
 @endsection
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function confirmDelete(id) {
         Swal.fire({
