@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name') }}</title>
+    <title>{{ config('app.name', 'Sistem Akreditasi LPPBJ') }}</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -30,24 +30,16 @@
             opacity: 0.6; z-index: 1;
         }
 
-        /* Container Carousel Full Height */
-        .carousel-container {
-            position: relative; z-index: 2; height: 100%; width: 100%;
-        }
-
-        /* Item Carousel: Konten di Tengah Vertikal */
-        .carousel-item {
-            height: 100vh; /* Full tinggi layar kanan */
-        }
+        .carousel-container { position: relative; z-index: 2; height: 100%; width: 100%; }
+        .carousel-item { height: 100vh; }
         
-        /* Wrapper konten agar di tengah sempurna */
         .carousel-content-wrapper {
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* PUSAT VERTIKAL (SOLUSI TABRAKAN) */
+            justify-content: center;
             align-items: center;
-            padding-bottom: 50px; /* Memberi jarak aman dari indikator bawah */
+            padding-bottom: 50px;
         }
 
         .carousel-img {
@@ -62,7 +54,6 @@
             100% { transform: translateY(0px); }
         }
 
-        /* Indikator (Titik-titik) */
         .carousel-indicators { bottom: 30px; }
         .carousel-indicators [data-bs-target] {
             width: 10px; height: 10px; border-radius: 50%;
@@ -88,6 +79,14 @@
             position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
             color: #6c757d; z-index: 10;
         }
+
+        /* TOMBOL MATA (SHOW PASSWORD) */
+        .password-toggle-btn {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; color: #6c757d; z-index: 10;
+            background: none; border: none; padding: 0;
+        }
+        .password-toggle-btn:hover { color: #0d6efd; }
 
         .btn-webapp {
             background: #0d6efd; color: white; font-weight: bold; letter-spacing: 1px;
@@ -122,23 +121,28 @@
                         <div class="input-icon-wrapper">
                             <i class="icon fas fa-user"></i>
                             <input type="email" class="form-control form-control-large @error('email') is-invalid @enderror" 
-                                   name="email" value="{{ old('email') }}" placeholder="Email Instansi" required autofocus>
+                                   name="email" value="{{ old('email') }}" placeholder="Email" required autofocus>
                         </div>
                         @error('email') <small class="text-danger mt-1 d-block">{{ $message }}</small> @enderror
                     </div>
 
                     <div class="mb-3">
-                        <div class="input-icon-wrapper">
+                        <div class="input-icon-wrapper position-relative">
                             <i class="icon fas fa-key"></i>
-                            <input type="password" class="form-control form-control-large @error('password') is-invalid @enderror" 
-                                   name="password" placeholder="Kata Sandi" required>
+                            
+                            <input type="password" id="passwordInput" 
+                                   class="form-control form-control-large @error('password') is-invalid @enderror" 
+                                   name="password" placeholder="Kata Sandi" required style="padding-right: 40px;">
+                            
+                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility()">
+                                <i id="eyeIcon" class="fas fa-eye"></i>
+                            </button>
                         </div>
                         @error('password') <small class="text-danger mt-1 d-block">{{ $message }}</small> @enderror
                     </div>
 
                     <div class="mb-4">
                         <div class="d-flex align-items-center gap-2">
-                            
                             <div class="captcha-box border rounded overflow-hidden flex-shrink-0" style="height: 50px; min-width: 120px;">
                                 {!! captcha_img('flat') !!}
                             </div>
@@ -185,37 +189,27 @@
                     </div>
 
                     <div class="carousel-inner h-100">
-                        
                         <div class="carousel-item active">
                             <div class="carousel-content-wrapper px-5 text-center">
                                 <img src="https://cdn-icons-png.flaticon.com/512/1688/1688394.png" class="carousel-img" alt="Management">
                                 <h3 class="fw-bold mb-3">Manajemen Data Terpusat</h3>
-                                <p class="opacity-75 lead fs-6 w-75">
-                                    Platform terintegrasi untuk pengelolaan data akreditasi LPPBJ di seluruh Indonesia.
-                                </p>
+                                <p class="opacity-75 lead fs-6 w-75">Platform terintegrasi untuk pengelolaan data akreditasi LPPBJ di seluruh Indonesia.</p>
                             </div>
                         </div>
-
                         <div class="carousel-item">
                             <div class="carousel-content-wrapper px-5 text-center">
                                 <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png" class="carousel-img" alt="Analysis">
                                 <h3 class="fw-bold mb-3">Monitoring Real-time</h3>
-                                <p class="opacity-75 lead fs-6 w-75">
-                                    Pantau perkembangan status akreditasi dan masa berlaku sertifikasi secara langsung.
-                                </p>
+                                <p class="opacity-75 lead fs-6 w-75">Pantau perkembangan status akreditasi dan masa berlaku sertifikasi secara langsung.</p>
                             </div>
                         </div>
-
                         <div class="carousel-item">
                             <div class="carousel-content-wrapper px-5 text-center">
                                 <img src="https://cdn-icons-png.flaticon.com/512/1584/1584892.png" class="carousel-img" alt="Security">
                                 <h3 class="fw-bold mb-3">Keamanan Terjamin</h3>
-                                <p class="opacity-75 lead fs-6 w-75">
-                                    Infrastruktur keamanan tinggi untuk menjaga kerahasiaan dan integritas data instansi Anda.
-                                </p>
+                                <p class="opacity-75 lead fs-6 w-75">Infrastruktur keamanan tinggi untuk menjaga kerahasiaan dan integritas data instansi Anda.</p>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -232,27 +226,40 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Inisialisasi Tooltip Bootstrap
+        // Init Tooltip
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
           return new bootstrap.Tooltip(tooltipTriggerEl)
         })
 
+        // Script Show/Hide Password
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('eyeIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        // Script Refresh Captcha
         function refreshCaptcha() {
-            // Animasi putar icon
             $('.fa-sync-alt').addClass('fa-spin');
-            
             $.ajax({
                 type: 'GET', url: "{{ route('refresh.captcha') }}",
                 success: function (data) {
                     $('.captcha-box').html(data.captcha);
                     $('.fa-sync-alt').removeClass('fa-spin');
                 },
-                error: function() {
-                    $('.fa-sync-alt').removeClass('fa-spin');
-                }
+                error: function() { $('.fa-sync-alt').removeClass('fa-spin'); }
             });
         }
+
         function alertBuatAkun(e) {
             e.preventDefault();
             Swal.fire({ icon: 'info', title: 'Registrasi Akun', text: 'Silahkan hubungi Admin IT LPPBJ.', confirmButtonColor: '#0d6efd' });
