@@ -117,7 +117,7 @@
                                 <div class="d-flex justify-content-center gap-1">
                                     <a href="{{ route('lppbj.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
                                     
-                                    @if(Auth::user()->role == 'admin')
+                                    
                                     <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})">
                                         Hapus
                                     </button>
@@ -126,7 +126,7 @@
                                         @csrf
                                         @method('DELETE')
                                     </form>
-                                    @endif
+                                    
                                 </div>
                             </td>
                             @endif
