@@ -20,13 +20,7 @@ class LppbjController extends Controller
             return $next($request);
         })->only(['create', 'store', 'edit', 'update', 'destroy']);
 
-        // 2. Sekretariat DILARANG menghapus data (Destroy)
-        $this->middleware(function ($request, $next) {
-            if (auth()->user()->role == 'sekretariat') {
-                abort(403, 'AKSES DITOLAK: Sekretariat tidak memiliki hak hapus.');
-            }
-            return $next($request);
-        })->only(['destroy']);
+
     }
     // MENAMPILKAN DATA & SEARCH
     public function index(Request $request)
